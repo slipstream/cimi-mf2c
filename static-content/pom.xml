@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>SlipStreamServer-ui-static-content</artifactId>
+  <name>SlipStreamServer/static-content</name>
+
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>com.sixsq.slipstream</groupId>
+    <artifactId>SlipStreamServer</artifactId>
+    <version>3.46-SNAPSHOT</version>
+  </parent>
+  
+  <dependencies>
+    <dependency>
+      <groupId>com.sixsq.slipstream</groupId>
+      <artifactId>SlipStreamUI-dep</artifactId>
+      <type>pom</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        
+        <executions>
+          <execution>
+            <id>copy-common</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/results</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.sixsq.slipstream</groupId>
+                  <artifactId>SlipStreamUI</artifactId>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+	<artifactId>maven-assembly-plugin</artifactId>
+	
+	<executions>
+
+	  <execution>
+	    <id>static-content</id>
+	    <goals>
+	      <goal>single</goal>
+	    </goals>
+	    <phase>package</phase>
+	    <configuration>
+	      <appendAssemblyId>false</appendAssemblyId>
+	      <descriptors>
+		<descriptor>${basedir}/src/main/assembly/static-content.xml</descriptor>
+	      </descriptors>
+	    </configuration>
+	  </execution>
+
+	</executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>

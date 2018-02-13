@@ -1,0 +1,27 @@
+<assembly>
+  <id>static-content</id>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <formats>
+    <format>zip</format>
+  </formats>
+
+  <fileSets>
+    <fileSet>
+      <directory>target/results/static_content</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>css/**/*</include>
+        <include>js/**/*</include>
+        <include>external/**/*</include>
+        <include>images/**/*</include>
+        <include>font/**/*</include>
+        <include>themes/**/*</include>
+        <include>errors/**/*</include>
+        <include>/terms.html</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
+</assembly>

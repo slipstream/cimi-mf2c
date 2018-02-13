@@ -1,0 +1,28 @@
+[Unit]
+Description=SlipStream Pricing Service
+After=syslog.target
+After=network.target
+
+[Service]
+Environment=SLIPSTREAM_RING_CONTAINER_INIT=sixsq.slipstream.prs.ring/init
+Environment=SLIPSTREAM_RING_CONTAINER_PORT=8203
+Environment=AUTH_PUBLIC_KEY=/etc/slipstream/auth/auth_pubkey.pem
+EnvironmentFile=-/etc/default/ss-pricing
+
+User=slipstream
+
+WorkingDirectory=/opt/slipstream/ss-pricing
+
+ExecStart=/usr/bin/java \
+            -cp "/opt/slipstream/ring-container/lib/*:resources:lib/*" \
+            sixsq.slipstream.server.ring_container
+ExecStop=/bin/kill -TERM $MAINPID
+
+Restart=always
+RestartSec=10
+
+# When a JVM receives a SIGTERM signal it exits with code 143
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
