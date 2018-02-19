@@ -3,7 +3,8 @@
    either via the static 'main' function (e.g. for running as a daemon) or via
    the 'start' function (e.g. for testing from the REPL)."
   (:require
-    [clojure.tools.logging :as log])
+    [clojure.tools.logging :as log]
+    [clojure.string :as str])
   (:import
     [java.io Closeable]
     [java.net InetSocketAddress])
@@ -106,20 +107,14 @@
     (log/info "started aleph application container on address:port" address ":" port)
     server))
 
-(defn- validate-address
+(defn validate-address
   "Parses the given value (string or int) as an integer and returns the value
     if it is a valid port number. For any invalid input, this function returns
     the default port."
-  [addr]
-  (try
-    (let [port (cond
-                  (string? addr) addr
-                  :else default-address)]
-      (if (> (count addr) 0)
-        addr
-        default-address))
-    (catch Exception _
-      default-address)))
+  [address]
+  (if (and (string? address) (not (str/blank? address)))
+    address
+    default-address))
 
 (defn- parse-port
   "Parses the given value (string or int) as an integer and returns the value
@@ -143,7 +138,8 @@
   [server-init & [port address]]
   (let [server-init-fn (dyn-resolve server-init)
         [handler finalization-fn] (server-init-fn)
-        port (parse-port port)]
+        port (parse-port port)
+        address (validate-address address)]
 
     (log/info "starting " server-init "on" address "and port" port)
     (log/info "java vendor: " (System/getProperty "java.vendor"))
