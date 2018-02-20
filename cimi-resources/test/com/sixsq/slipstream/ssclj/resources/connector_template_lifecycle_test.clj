@@ -16,7 +16,6 @@
 
 (def base-uri (str p/service-context (u/de-camelcase resource-name)))
 
-
 (deftest check-retrieve-by-id
   (let [id (str resource-url "/" example/cloud-service-type)
         doc (crud/retrieve-by-id id)]
