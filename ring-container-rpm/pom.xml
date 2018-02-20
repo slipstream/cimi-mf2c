@@ -136,7 +136,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- <plugin><artifactId>maven-assembly-plugin</artifactId><version>2.6</version><configuration><descriptor>src/assembly/ring-container-assembler.xml</descriptor></configuration><executions><execution><id>create-archive</id><phase>package</phase><goals><goal>single</goal></goals></execution></executions></plugin> -->
       <!-- docker build -->
       <plugin>
         <groupId>io.fabric8</groupId>
@@ -171,10 +170,8 @@
                   </inline>
                 </assembly>
                 <runCmds>
-                  <runCmd>echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories</runCmd>
-                  <runCmd>apk --no-cache add shadow</runCmd>
                   <runCmd>apk update</runCmd>
-                  <runCmd>apk add openssh</runCmd>
+                  <runCmd>apk add openssl openssh shadow</runCmd>
                   <runCmd>/usr/sbin/groupadd -r slipstream</runCmd>
                   <runCmd>/usr/sbin/useradd -r -d ${installation.dir} -g slipstream slipstream</runCmd>
                   <runCmd>mkdir -p /opt/slipstream/server/.ssh</runCmd>
