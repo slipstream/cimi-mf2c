@@ -495,7 +495,7 @@ ${installation.dir}/bin/generate-auth-keys.sh
                   <SLIPSTREAM_RING_CONTAINER_PORT>8201</SLIPSTREAM_RING_CONTAINER_PORT>
                   <SLIPSTREAM_RING_CONTAINER_ADDRESS>0.0.0.0</SLIPSTREAM_RING_CONTAINER_ADDRESS>
                   <SSCLJ_GRAPHITE_HOST>127.0.0.1</SSCLJ_GRAPHITE_HOST>
-                  <ES_HOST>localhost</ES_HOST>
+                  <ES_HOST>elasticsearch</ES_HOST>
                   <ES_PORT>9300</ES_PORT>
                   <AUTH_PRIVATE_KEY>/etc/slipstream/auth/auth_privkey.pem</AUTH_PRIVATE_KEY>
                   <AUTH_PUBLIC_KEY>/etc/slipstream/auth/auth_pubkey.pem</AUTH_PUBLIC_KEY>
