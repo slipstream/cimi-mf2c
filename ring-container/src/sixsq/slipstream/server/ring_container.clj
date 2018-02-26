@@ -3,15 +3,13 @@
    either via the static 'main' function (e.g. for running as a daemon) or via
    the 'start' function (e.g. for testing from the REPL)."
   (:require
-    [clojure.tools.logging :as log]
-    [clojure.string :as str])
+    [clojure.tools.logging :as log])
   (:import
     [java.io Closeable]
     [java.net InetSocketAddress])
   (:gen-class))
 
 (def ^:const default-port 8200)
-(def ^:const default-address "127.0.0.1")
 
 (defn- log-and-throw
   "Logs a fatal error and then throws an exception with the given method and
@@ -97,24 +95,15 @@
   "Starts the aleph container with the given ring handler and on the given
    port. Returns the server object that has been started, which can be stopped
    by calling 'close' on the object."
-  [handler ^long port address]
-  (log/info "starting aleph application container on address:port" address ":" port)
+  [handler ^long port]
+  (log/info "starting aleph application container on port" port)
   (let [start-server (dyn-resolve 'aleph.http/start-server)
         server (->> port
-                    (InetSocketAddress. address)
+                    (InetSocketAddress. "127.0.0.1")
                     (hash-map :socket-address)
                     (start-server handler))]
-    (log/info "started aleph application container on address:port" address ":" port)
+    (log/info "started aleph application container on port" port)
     server))
-
-(defn validate-address
-  "Parses the given value (string or int) as an integer and returns the value
-    if it is a valid port number. For any invalid input, this function returns
-    the default port."
-  [address]
-  (if (and (string? address) (not (str/blank? address)))
-    address
-    default-address))
 
 (defn- parse-port
   "Parses the given value (string or int) as an integer and returns the value
@@ -135,21 +124,20 @@
 (defn start
   "Starts the application and application server. Return a 'stop' function
    that will shutdown the application and server when called."
-  [server-init & [port address]]
+  [server-init & [port]]
   (let [server-init-fn (dyn-resolve server-init)
         [handler finalization-fn] (server-init-fn)
-        port (parse-port port)
-        address (validate-address address)]
+        port (parse-port port)]
 
-    (log/info "starting " server-init "on" address "and port" port)
+    (log/info "starting " server-init "on" port)
     (log/info "java vendor: " (System/getProperty "java.vendor"))
     (log/info "java version: " (System/getProperty "java.version"))
     (log/info "java classpath: " (System/getProperty "java.class.path"))
 
-    (let [server (start-container handler port address)
+    (let [server (start-container handler port)
           shutdown-fn (create-shutdown-fn server finalization-fn)]
 
-      (log/info "started" server-init "on" address "and port" port)
+      (log/info "started" server-init "on" port)
       shutdown-fn)))
 
 (defn- server-cfg
@@ -166,10 +154,9 @@
    start function."
   []
   (let [env (dyn-resolve 'environ.core/env)
-        server-port (env :slipstream-ring-container-port)
-        server-address (env :slipstream-ring-container-address)]
+        server-port (env :slipstream-ring-container-port)]
     (if-let [server-init (env :slipstream-ring-container-init)]
-      [server-init server-port server-address]
+      [server-init server-port]
       (let [msg "SLIPSTREAM_RING_CONTAINER_INIT is not defined"]
         (log/error msg)
         (throw (ex-info msg {}))))))
@@ -180,8 +167,8 @@
    SLIPSTREAM_RING_CONTAINER_INIT and optionally SLIPSTREAM_RING_CONTAINER_PORT
    defined."
   [& _]
-  (let [[server-init server-port server-address] (server-cfg)
-        shutdown-fn (start server-init server-port server-address)]
+  (let [[server-init server-port] (server-cfg)
+        shutdown-fn (start server-init server-port)]
     (register-shutdown-hook shutdown-fn))
 
   ;; The server (started as a daemon thread) will exit immediately
